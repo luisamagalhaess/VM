@@ -1,0 +1,28 @@
+Script started on 2026-11-23 14:11:04-03:00 [TERM="xterm-256color" TTY="/dev/pts/0" COLUMNS="127" LINES="12"]
+[?2004h]0;luisa@LAPTOP-Q39GM9AS: /mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[01;32mluisa@LAPTOP-Q39GM9AS[00m:[01;34m/mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[00m$ make
+[?2004lgcc -Wall -Wextra -Wpedantic -std=c11 vm.c -o vm
+[?2004h]0;luisa@LAPTOP-Q39GM9AS: /mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[01;32mluisa@LAPTOP-Q39GM9AS[00m:[01;34m/mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[00m$ ./vm
+[?2004lErro: foram informados 0 parametro(s), mas sao necessarios 3.
+Forma de uso: ./vm <arquivo_de_enderecos> <fifo|lru> <fifo|lru>
+  2o parametro: politica de substituicao de paginas
+  3o parametro: politica de substituicao da TLB
+Exemplo: ./vm address.txt lru fifo
+[?2004h]0;luisa@LAPTOP-Q39GM9AS: /mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[01;32mluisa@LAPTOP-Q39GM9AS[00m:[01;34m/mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[00m$ make
+[?2004lgcc -Wall -Wextra -Wpedantic -std=c11 vm.c -o vm
+[?2004h]0;luisa@LAPTOP-Q39GM9AS: /mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[01;32mluisa@LAPTOP-Q39GM9AS[00m:[01;34m/mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[00m$ [7m./vm address.txt lru fifo [27m[1P./vm address.txt lru fifo[Ko
+[?2004lErro: nao consegui abrir 'address.txt' (No such file or directory).
+[?2004h]0;luisa@LAPTOP-Q39GM9AS: /mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[01;32mluisa@LAPTOP-Q39GM9AS[00m:[01;34m/mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[00m$ [7m./vm nao_existe.txt lru fifo [27m[1P./vm nao_existe.txt lru fifo
+[?2004lErro: nao consegui abrir 'nao_existe.txt' (No such file or directory).
+[?2004h]0;luisa@LAPTOP-Q39GM9AS: /mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[01;32mluisa@LAPTOP-Q39GM9AS[00m:[01;34m/mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[00m$ [7m./vm address.txt lru fifo[27m./vm address.txt lru fifo
+[?2004lErro: nao consegui abrir 'address.txt' (No such file or directory).
+[?2004h]0;luisa@LAPTOP-Q39GM9AS: /mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[01;32mluisa@LAPTOP-Q39GM9AS[00m:[01;34m/mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[00m$ [7m./vm address.txt lru fifo[27m./vm address.txt lru fifo[C[C[1P[1@s[1@e[1@s
+[?2004l1000 enderecos validos em 'addresses.txt'.
+[?2004h]0;luisa@LAPTOP-Q39GM9AS: /mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[01;32mluisa@LAPTOP-Q39GM9AS[00m:[01;34m/mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[00m$ [7mprintf '16916\nabc\n' > teste.txt && ./vm teste.txt l[27m[7mr[27m[7mu fifo [27m[A]0;luisa@LAPTOP-Q39GM9AS: /mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[01;32mluisa@LAPTOP-Q39GM9AS[00m:[01;34m/mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[00m$ printf '16916\nabc\n' > teste.txt && ./vm teste.txt lru fifo 
+[?2004lErro em 'teste.txt', linha 2: esperado um unico numero inteiro entre 0 e 65535.
+[?2004h]0;luisa@LAPTOP-Q39GM9AS: /mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[01;32mluisa@LAPTOP-Q39GM9AS[00m:[01;34m/mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[00m$ [7mrm teste.txt[27mrm teste.txt
+[?2004l[?2004h]0;luisa@LAPTOP-Q39GM9AS: /mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[01;32mluisa@LAPTOP-Q39GM9AS[00m:[01;34m/mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[00m$ make
+[?2004lgcc -Wall -Wextra -Wpedantic -std=c11 vm.c -o vm
+[01m[Kvm.c:204:13:[m[K [01;35m[Kwarning: [m[K‘[01m[Kpreparar_mmu[m[K’ defined but not used [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-function-Wunused-function]8;;[m[K]
+  204 | static void [01;35m[Kpreparar_mmu[m[K(Mmu *mmu){
+      |             [01;35m[K^~~~~~~~~~~~[m[K
+[?2004h]0;luisa@LAPTOP-Q39GM9AS: /mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[01;32mluisa

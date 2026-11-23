@@ -5,6 +5,14 @@
 
 #define MAIOR_ENDERECO   65535u
 #define TAM_BUFFER_LINHA 64
+#define TAM_PAGINA  256
+#define QTD_PAGINAS  256
+#ifndef QTD_QUADROS
+#define QTD_QUADROS 256
+#endif
+#define SEM_QUADRO (-1)
+#define ARQUIVO_DISCO "BACKING_STORE.bin"
+#define ARQUIVO_SAIDA "correct.txt"
 
 typedef enum {
     POLITICA_INVALIDA = 0,
@@ -31,6 +39,16 @@ typedef enum {
     LINHA_NAO_NUMERICA,
     LINHA_FORA_DA_FAIXA
 } SituacaoLinha;
+
+typedef struct {
+    int tabela_paginas[QTD_PAGINAS];
+    int dono_do_quadro[QTD_QUADROS];
+    signed char ram[QTD_QUADROS][TAM_PAGINA];
+    int quadros_ocupados;
+    FILE *disco;
+    unsigned long faltas_de_pagina;
+    unsigned long acertos_tlb;
+} Mmu;
 
 static Politica identificar_politica(const char *texto){
     if (strcmp(texto, "fifo") == 0) return POLITICA_FIFO;
@@ -181,6 +199,16 @@ falhou:
     fclose(arq);
     descartar_enderecos(lista);
     return 0;
+}
+
+static void preparar_mmu(Mmu *mmu){
+    int i;
+    for (i = 0; i < QTD_PAGINAS; i++) mmu->tabela_paginas[i] = SEM_QUADRO;
+    for (i = 0; i < QTD_QUADROS; i++) mmu->dono_do_quadro[i] = -1;
+    mmu->quadros_ocupados = 0;
+    mmu->disco            = NULL;
+    mmu->faltas_de_pagina = 0;
+    mmu->acertos_tlb      = 0;
 }
 
 int main(int argc, char *argv[]){
