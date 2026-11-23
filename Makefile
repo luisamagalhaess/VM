@@ -2,7 +2,7 @@ vm:
 	gcc -Wall -Wextra -Wpedantic -std=c11 vm.c -o vm
 
 run:
-	./vm address.txt lru fifo
+	./vm addresses.txt lru fifo
 
 clean:
 	rm -f vm correct.txt

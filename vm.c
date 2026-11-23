@@ -1,6 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
+
+#define MAIOR_ENDERECO   65535u
+#define TAM_BUFFER_LINHA 64
 
 typedef enum {
     POLITICA_INVALIDA = 0,
@@ -14,6 +18,19 @@ typedef struct {
     Politica troca_paginas;
     Politica troca_tlb;
 } Configuracao;
+
+typedef struct {
+    unsigned short *valores;
+    size_t qtd; 
+    size_t espaco;
+} ListaEnderecos;
+
+typedef enum {
+    LINHA_OK,
+    LINHA_VAZIA,
+    LINHA_NAO_NUMERICA,
+    LINHA_FORA_DA_FAIXA
+} SituacaoLinha;
 
 static Politica identificar_politica(const char *texto){
     if (strcmp(texto, "fifo") == 0) return POLITICA_FIFO;
@@ -46,12 +63,139 @@ static int carregar_configuracao(int qtd, char *param[], Configuracao *cfg){
     return 1;
 }
 
+static int eh_espaco(char c){
+    return c == ' ' || c == '\t' || c == '\r' || c == '\n';
+}
+
+static SituacaoLinha analisar_linha(const char *linha, unsigned *saida){
+    const char *p = linha;
+    unsigned long acumulado = 0;
+    int estourou = 0;
+
+    while (eh_espaco(*p)) p++;
+    if (*p == '\0') return LINHA_VAZIA;
+    if (*p < '0' || *p > '9') return LINHA_NAO_NUMERICA;
+
+    while (*p >= '0' && *p <= '9') {
+        acumulado = acumulado * 10 + (unsigned long)(*p - '0');
+        if (acumulado > MAIOR_ENDERECO) {
+            estourou = 1;
+            acumulado = MAIOR_ENDERECO + 1;
+        }
+        p++;
+    }
+
+    while (eh_espaco(*p)) p++;
+    if (*p != '\0') return LINHA_NAO_NUMERICA;
+    if (estourou) return LINHA_FORA_DA_FAIXA;
+
+    *saida = (unsigned)acumulado;
+    return LINHA_OK;
+}
+
+static int anexar_endereco(ListaEnderecos *lista, unsigned valor){
+    if (lista->qtd == lista->espaco) {
+        size_t novo_espaco = lista->espaco ? lista->espaco * 2 : 512;
+        unsigned short *maior = realloc(lista->valores, novo_espaco * sizeof *maior);
+        if (maior == NULL) return 0;
+        lista->valores = maior;
+        lista->espaco  = novo_espaco;
+    }
+    lista->valores[lista->qtd++] = (unsigned short)valor;
+    return 1;
+}
+
+static void descartar_enderecos(ListaEnderecos *lista)
+{
+    free(lista->valores);
+    lista->valores    = NULL;
+    lista->qtd = 0;
+    lista->espaco     = 0;
+}
+
+static int importar_enderecos(const char *caminho, ListaEnderecos *lista){
+    char linha[TAM_BUFFER_LINHA];
+    unsigned numero_linha = 0;
+    unsigned primeira_em_branco = 0;
+    FILE *arq;
+
+    lista->valores = NULL;
+    lista->qtd = 0;
+    lista->espaco = 0;
+
+    arq = fopen(caminho, "r");
+    if (arq == NULL) {
+        fprintf(stderr, "Erro: nao consegui abrir '%s' (%s).\n", caminho, strerror(errno));
+        return 0;
+    }
+
+    while (fgets(linha, sizeof linha, arq) != NULL) {
+        unsigned valor = 0;
+        numero_linha++;
+
+        if (strchr(linha, '\n') == NULL && !feof(arq)) {
+            fprintf(stderr, "Erro em '%s': a linha %u e comprida demais.\n", caminho, numero_linha);
+            goto falhou;
+        }
+
+        switch (analisar_linha(linha, &valor)) {
+        case LINHA_VAZIA:
+            if (primeira_em_branco == 0) primeira_em_branco = numero_linha;
+            continue;
+        case LINHA_NAO_NUMERICA:
+            fprintf(stderr, "Erro em '%s', linha %u: esperado um unico numero inteiro "
+                    "entre 0 e %u.\n", caminho, numero_linha, MAIOR_ENDERECO);
+            goto falhou;
+        case LINHA_FORA_DA_FAIXA:
+            fprintf(stderr, "Erro em '%s', linha %u: endereco maior que %u.\n",
+                    caminho, numero_linha, MAIOR_ENDERECO);
+            goto falhou;
+        case LINHA_OK:
+            break;
+        }
+
+        if (primeira_em_branco != 0) {
+            fprintf(stderr, "Erro em '%s': linha %u esta em branco no meio do arquivo.\n",
+                    caminho, primeira_em_branco);
+            goto falhou;
+        }
+        if (!anexar_endereco(lista, valor)) {
+            fprintf(stderr, "Erro: memoria insuficiente para guardar os enderecos.\n");
+            goto falhou;
+        }
+    }
+
+    if (ferror(arq)) {
+        fprintf(stderr, "Erro: falha ao ler '%s' (e um arquivo de texto?).\n", caminho);
+        goto falhou;
+    }
+    if (lista->qtd == 0) {
+        fprintf(stderr, "Erro: '%s' nao contem nenhum endereco.\n", caminho);
+        goto falhou;
+    }
+
+    fclose(arq);
+    return 1;
+
+falhou:
+    fclose(arq);
+    descartar_enderecos(lista);
+    return 0;
+}
+
 int main(int argc, char *argv[]){
     Configuracao cfg;
-    if (!carregar_configuracao(argc, argv, &cfg)) {
+    ListaEnderecos enderecos;
+    if (!carregar_configuracao(argc, argv, &cfg)){
         exibir_ajuda(argv[0]);
         return EXIT_FAILURE;
     }
 
+    if (!importar_enderecos(cfg.caminho_enderecos, &enderecos)){
+        return EXIT_FAILURE;
+    }
+    printf("%zu enderecos validos em '%s'.\n", enderecos.qtd, cfg.caminho_enderecos);
+
+    descartar_enderecos(&enderecos);
     return EXIT_SUCCESS;
 }
