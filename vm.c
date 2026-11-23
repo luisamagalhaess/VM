@@ -50,6 +50,16 @@ typedef struct {
     unsigned long acertos_tlb;
 } Mmu;
 
+typedef struct {
+    unsigned logico;
+    unsigned pagina;
+    unsigned deslocamento;
+    int quadro;
+    int posicao_tlb;
+    unsigned fisico;
+    int conteudo;
+} Traducao;
+
 static Politica identificar_politica(const char *texto){
     if (strcmp(texto, "fifo") == 0) return POLITICA_FIFO;
     if (strcmp(texto, "lru") == 0)  return POLITICA_LRU;
@@ -253,6 +263,35 @@ static int atender_falta(Mmu *mmu, unsigned pagina){
     mmu->dono_do_quadro[quadro] = (int)pagina;
     mmu->faltas_de_pagina++;
     return quadro;
+}
+
+static int traduzir(Mmu *mmu, unsigned logico, Traducao *t){
+    t->logico = logico;
+    t->pagina = logico / TAM_PAGINA;
+    t->deslocamento = logico % TAM_PAGINA;
+    t->posicao_tlb  = -1;
+    t->quadro = mmu->tabela_paginas[t->pagina];
+    if (t->quadro == SEM_QUADRO){
+        t->quadro = atender_falta(mmu, t->pagina);
+        if (t->quadro == SEM_QUADRO){
+            return 0;
+        }
+    }
+    t->fisico = (unsigned)t->quadro * TAM_PAGINA + t->deslocamento;
+    t->conteudo = mmu->ram[t->quadro][t->deslocamento];
+    return 1;
+}
+
+static void escrever_traducao(FILE *saida, const Traducao *t){
+    fprintf(saida, "Virtual address: %u TLB: %d Physical address: %u Value: %d\n", t->logico, t->posicao_tlb, t->fisico, t->conteudo);
+}
+
+static void escrever_estatisticas(FILE *saida, const Mmu *mmu, size_t total){
+    fprintf(saida, "Number of Translated Addresses = %zu\n", total);
+    fprintf(saida, "Page Faults = %lu\n", mmu->faltas_de_pagina);
+    fprintf(saida, "Page Fault Rate = %.3f\n", (double)mmu->faltas_de_pagina / (double)total);
+    fprintf(saida, "TLB Hits = %lu\n", mmu->acertos_tlb);
+    fprintf(saida, "TLB Hit Rate = %.3f\n", (double)mmu->acertos_tlb / (double)total);
 }
 
 int main(int argc, char *argv[]){
