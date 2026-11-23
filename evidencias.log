@@ -25,4 +25,49 @@ Exemplo: ./vm address.txt lru fifo
 [01m[Kvm.c:204:13:[m[K [01;35m[Kwarning: [m[K‘[01m[Kpreparar_mmu[m[K’ defined but not used [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-function-Wunused-function]8;;[m[K]
   204 | static void [01;35m[Kpreparar_mmu[m[K(Mmu *mmu){
       |             [01;35m[K^~~~~~~~~~~~[m[K
-[?2004h]0;luisa@LAPTOP-Q39GM9AS: /mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[01;32mluisa
+[?2004h]0;luisa@LAPTOP-Q39GM9AS: /mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[01;32mluisa@LAPTOP-Q39GM9AS[00m:[01;34m/mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[00m$ make
+[?2004lgcc -Wall -Wextra -Wpedantic -std=c11 vm.c -o vm
+[01m[Kvm.c:214:12:[m[K [01;35m[Kwarning: [m[K‘[01m[Kconectar_disco[m[K’ defined but not used [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-function-Wunused-function]8;;[m[K]
+  214 | static int [01;35m[Kconectar_disco[m[K(Mmu *mmu){
+      |            [01;35m[K^~~~~~~~~~~~~~[m[K
+[01m[Kvm.c:204:13:[m[K [01;35m[Kwarning: [m[K‘[01m[Kpreparar_mmu[m[K’ defined but not used [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-function-Wunused-function]8;;[m[K]
+  204 | static void [01;35m[Kpreparar_mmu[m[K(Mmu *mmu){
+      |             [01;35m[K^~~~~~~~~~~~[m[K
+[?2004h]0;luisa@LAPTOP-Q39GM9AS: /mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[01;32mluisa@LAPTOP-Q39GM9AS[00m:[01;34m/mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[00m$ make
+[?2004lgcc -Wall -Wextra -Wpedantic -std=c11 vm.c -o vm
+[01m[Kvm.c:214:12:[m[K [01;35m[Kwarning: [m[K‘[01m[Kconectar_disco[m[K’ defined but not used [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-function-Wunused-function]8;;[m[K]
+  214 | static int [01;35m[Kconectar_disco[m[K(Mmu *mmu){
+      |            [01;35m[K^~~~~~~~~~~~~~[m[K
+[01m[Kvm.c:204:13:[m[K [01;35m[Kwarning: [m[K‘[01m[Kpreparar_mmu[m[K’ defined but not used [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-function-Wunused-function]8;;[m[K]
+  204 | static void [01;35m[Kpreparar_mmu[m[K(Mmu *mmu){
+      |             [01;35m[K^~~~~~~~~~~~[m[K
+[?2004h]0;luisa@LAPTOP-Q39GM9AS: /mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[01;32mluisa@LAPTOP-Q39GM9AS[00m:[01;34m/mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[00m$ make
+[?2004lgcc -Wall -Wextra -Wpedantic -std=c11 vm.c -o vm
+[01m[Kvm.c:214:12:[m[K [01;35m[Kwarning: [m[K‘[01m[Kconectar_disco[m[K’ defined but not used [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-function-Wunused-function]8;;[m[K]
+  214 | static int [01;35m[Kconectar_disco[m[K(Mmu *mmu){
+      |            [01;35m[K^~~~~~~~~~~~~~[m[K
+[01m[Kvm.c:204:13:[m[K [01;35m[Kwarning: [m[K‘[01m[Kpreparar_mmu[m[K’ defined but not used [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-function-Wunused-function]8;;[m[K]
+  204 | static void [01;35m[Kpreparar_mmu[m[K(Mmu *mmu){
+      |             [01;35m[K^~~~~~~~~~~~[m[K
+[?2004h]0;luisa@LAPTOP-Q39GM9AS: /mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[01;32mluisa@LAPTOP-Q39GM9AS[00m:[01;34m/mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[00m$ [K]0;luisa@LAPTOP-Q39GM9AS: /mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[01;32mluisa@LAPTOP-Q39GM9AS[00m:[01;34m/mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[00m$ [K]0;luisa@LAPTOP-Q39GM9AS: /mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[01;32mluisa@LAPTOP-Q39GM9AS[00m:[01;34m/mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[00m$ [K]0;luisa@LAPTOP-Q39GM9AS: /mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[01;32mluisa@LAPTOP-Q39GM9AS[00m:[01;34m/mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[00m$ [K]0;luisa@LAPTOP-Q39GM9AS: /mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[01;32mluisa@LAPTOP-Q39GM9AS[00m:[01;34m/mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[00m$ make
+[?2004lgcc -Wall -Wextra -Wpedantic -std=c11 vm.c -o vm
+[01m[Kvm.c:232:12:[m[K [01;35m[Kwarning: [m[K‘[01m[Ktrazer_do_disco[m[K’ defined but not used [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-function-Wunused-function]8;;[m[K]
+  232 | static int [01;35m[Ktrazer_do_disco[m[K(Mmu *mmu, unsigned pagina, int quadro){
+      |            [01;35m[K^~~~~~~~~~~~~~~[m[K
+[01m[Kvm.c:214:12:[m[K [01;35m[Kwarning: [m[K‘[01m[Kconectar_disco[m[K’ defined but not used [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-function-Wunused-function]8;;[m[K]
+  214 | static int [01;35m[Kconectar_disco[m[K(Mmu *mmu){
+      |            [01;35m[K^~~~~~~~~~~~~~[m[K
+[01m[Kvm.c:204:13:[m[K [01;35m[Kwarning: [m[K‘[01m[Kpreparar_mmu[m[K’ defined but not used [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-function-Wunused-function]8;;[m[K]
+  204 | static void [01;35m[Kpreparar_mmu[m[K(Mmu *mmu){
+      |             [01;35m[K^~~~~~~~~~~~[m[K
+[?2004h]0;luisa@LAPTOP-Q39GM9AS: /mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[01;32mluisa@LAPTOP-Q39GM9AS[00m:[01;34m/mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[00m$ [K]0;luisa@LAPTOP-Q39GM9AS: /mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[01;32mluisa@LAPTOP-Q39GM9AS[00m:[01;34m/mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[00m$ [K]0;luisa@LAPTOP-Q39GM9AS: /mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[01;32mluisa@LAPTOP-Q39GM9AS[00m:[01;34m/mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[00m$ [K]0;luisa@LAPTOP-Q39GM9AS: /mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[01;32mluisa@LAPTOP-Q39GM9AS[00m:[01;34m/mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[00m$ [K]0;luisa@LAPTOP-Q39GM9AS: /mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[01;32mluisa@LAPTOP-Q39GM9AS[00m:[01;34m/mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[00m$ [K]0;luisa@LAPTOP-Q39GM9AS: /mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[01;32mluisa@LAPTOP-Q39GM9AS[00m:[01;34m/mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[00m$ [K]0;luisa@LAPTOP-Q39GM9AS: /mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[01;32mluisa@LAPTOP-Q39GM9AS[00m:[01;34m/mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[00m$ [K]0;luisa@LAPTOP-Q39GM9AS: /mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[01;32mluisa@LAPTOP-Q39GM9AS[00m:[01;34m/mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[00m$ [K]0;luisa@LAPTOP-Q39GM9AS: /mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[01;32mluisa@LAPTOP-Q39GM9AS[00m:[01;34m/mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[00m$ make
+[?2004lgcc -Wall -Wextra -Wpedantic -std=c11 vm.c -o vm
+[?2004h]0;luisa@LAPTOP-Q39GM9AS: /mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[01;32mluisa@LAPTOP-Q39GM9AS[00m:[01;34m/mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[00m$ [7mmake[27m
+[7m./vm addresses.txt lru fifo[27m[A]0;luisa@LAPTOP-Q39GM9AS: /mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[01;32mluisa@LAPTOP-Q39GM9AS[00m:[01;34m/mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[00m$ make
+./vm addresses.txt lru fifo
+[?2004lgcc -Wall -Wextra -Wpedantic -std=c11 vm.c -o vm
+Erro: nao consegui abrir 'BACKING_STORE.bin' (No such file or directory). Ele precisa estar na pasta de onde o programa e executado.
+[?2004h]0;luisa@LAPTOP-Q39GM9AS: /mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[01;32mluisa@LAPTOP-Q39GM9AS[00m:[01;34m/mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[00m$ [K]0;luisa@LAPTOP-Q39GM9AS: /mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[01;32mluisa@LAPTOP-Q39GM9AS[00m:[01;34m/mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[00m$ [7m./vm addresses.txt lru fifo[27m./vm addresses.txt lru fifo
+[?2004lErro: nao consegui abrir 'BACKING_STORE.bin' (No such file or directory). Ele precisa estar na pasta de onde o programa e executado.
+[?2004h]0;luisa@LAPTOP-Q39GM9AS: /mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[01;32mluisa@LAPTOP-Q39GM9AS[00m:[01;34m/mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[00m$ [7m./vm addresses.txt lru fifo[27m./vm addresses.txt lru fifo
+[?2004lErro: nao consegui abrir 'BACKING_STORE.bin' (No such file or directory).

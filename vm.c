@@ -211,6 +211,50 @@ static void preparar_mmu(Mmu *mmu){
     mmu->acertos_tlb      = 0;
 }
 
+static int conectar_disco(Mmu *mmu){
+    long tam;
+    mmu->disco = fopen(ARQUIVO_DISCO, "rb");
+    if (mmu->disco == NULL) {
+        fprintf(stderr, "Erro: nao consegui abrir '%s' (%s). Ele precisa estar na pasta " "de onde o programa e executado.\n", ARQUIVO_DISCO, strerror(errno));
+        return 0;
+    }
+    fseek(mmu->disco, 0, SEEK_END);
+    tam = ftell(mmu->disco);
+    if (tam < (long)QTD_PAGINAS * TAM_PAGINA){
+        fprintf(stderr, "Erro: '%s' tem %ld bytes, mas precisa de pelo menos %d.\n", ARQUIVO_DISCO, tam, QTD_PAGINAS * TAM_PAGINA);
+        fclose(mmu->disco);
+        mmu->disco = NULL;
+        return 0;
+    }
+    return 1;
+}
+
+static int trazer_do_disco(Mmu *mmu, unsigned pagina, int quadro){
+    if (fseek(mmu->disco, (long)pagina * TAM_PAGINA, SEEK_SET) != 0 || fread(mmu->ram[quadro], 1, TAM_PAGINA, mmu->disco) != TAM_PAGINA){
+        fprintf(stderr, "Erro: leitura da pagina %u em '%s' falhou.\n", pagina, ARQUIVO_DISCO);
+        return 0;
+    }
+    return 1;
+}
+
+static int atender_falta(Mmu *mmu, unsigned pagina){
+    int quadro;
+    if (mmu->quadros_ocupados >= QTD_QUADROS){
+        fprintf(stderr, "Erro: memoria fisica cheia.\n");
+        return SEM_QUADRO;
+    }
+    quadro = mmu->quadros_ocupados++;
+
+    if (!trazer_do_disco(mmu, pagina, quadro)){
+        return SEM_QUADRO;
+    }
+
+    mmu->tabela_paginas[pagina] = quadro;
+    mmu->dono_do_quadro[quadro] = (int)pagina;
+    mmu->faltas_de_pagina++;
+    return quadro;
+}
+
 int main(int argc, char *argv[]){
     Configuracao cfg;
     ListaEnderecos enderecos;
