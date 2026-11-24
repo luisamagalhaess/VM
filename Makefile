@@ -1,5 +1,5 @@
 vm:
-	gcc -Wall -Wextra -Wpedantic -std=c11 vm.c -o vm
+	gcc -Wall -Wextra -Wpedantic -std=c11 vm.c -o vm -pthread
 
 run:
 	./vm addresses.txt lru fifo
@@ -7,4 +7,4 @@ run:
 clean:
 	rm -f vm correct.txt
 
-.PHONY: vm run clean
+.PHONY: vm run clea

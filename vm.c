@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#include <pthread.h>
 
 #define MAIOR_ENDERECO   65535u
 #define TAM_BUFFER_LINHA 64
@@ -13,6 +14,9 @@
 #define SEM_QUADRO (-1)
 #define TAM_TLB 16
 #ifndef USAR_TLB
+#ifndef USAR_THREADS
+#define USAR_THREADS 1
+#endif
 #define USAR_TLB 1
 #endif
 #define ARQUIVO_DISCO "BACKING_STORE.bin"
@@ -286,6 +290,46 @@ static int procurar_tlb(const Mmu *mmu, unsigned pagina){
     return -1;
 }
 
+typedef struct {
+    const EntradaTlb *entrada;
+    unsigned pagina_buscada;
+    int encontrou;
+} TarefaBusca;
+
+static void *comparar_entrada(void *arg){
+    TarefaBusca *tarefa = arg;
+    tarefa->encontrou = tarefa->entrada->ocupada && tarefa->entrada->pagina == tarefa->pagina_buscada;
+    return NULL;
+}
+
+static int procurar_tlb_paralelo(const Mmu *mmu, unsigned pagina){
+    pthread_t linhas[TAM_TLB];
+    TarefaBusca tarefas[TAM_TLB];
+    int criada[TAM_TLB];
+    int e;
+    int posicao = -1;
+    for (e = 0; e < TAM_TLB; e++){
+        tarefas[e].entrada = &mmu->tlb[e];
+        tarefas[e].pagina_buscada = pagina;
+        tarefas[e].encontrou = 0;
+        criada[e] = pthread_create(&linhas[e], NULL, comparar_entrada, &tarefas[e]) == 0;
+        if (!criada[e]){
+            comparar_entrada(&tarefas[e]);
+        }
+    }
+    for (e = 0; e < TAM_TLB; e++){
+        if (criada[e]){
+            pthread_join(linhas[e], NULL);
+        }
+    }
+    for (e = 0; e < TAM_TLB && posicao == -1; e++){
+        if (tarefas[e].encontrou){
+            posicao = e;
+        }
+    }
+    return posicao;
+}
+
 static int registrar_tlb(Mmu *mmu, unsigned pagina, int quadro){
     int e;
     int livre = -1;
@@ -371,7 +415,13 @@ static int traduzir(Mmu *mmu, unsigned logico, Traducao *t){
     t->pagina = logico / TAM_PAGINA;
     t->deslocamento = logico % TAM_PAGINA;
     mmu->relogio++;
-    t->posicao_tlb = USAR_TLB ? procurar_tlb(mmu, t->pagina) : -1;
+    if (!USAR_TLB){
+        t->posicao_tlb = -1;
+    } else if (USAR_THREADS){
+        t->posicao_tlb = procurar_tlb_paralelo(mmu, t->pagina);
+    } else {
+        t->posicao_tlb = procurar_tlb(mmu, t->pagina);
+    }
     if (t->posicao_tlb != -1){
         mmu->acertos_tlb++;
         t->quadro = mmu->tlb[t->posicao_tlb].quadro;
