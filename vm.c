@@ -49,6 +49,9 @@ typedef struct {
     unsigned long faltas_de_pagina;
     unsigned long acertos_tlb;
     int p_fifo;
+    unsigned long relogio;
+    unsigned long ultimo_uso[QTD_QUADROS];
+    Politica politica_paginas;
 } Mmu;
 
 typedef struct {
@@ -212,10 +215,15 @@ falhou:
     return 0;
 }
 
-static void preparar_mmu(Mmu *mmu){
+static void preparar_mmu(Mmu *mmu, const Configuracao *cfg){
     int i;
     for (i = 0; i < QTD_PAGINAS; i++) mmu->tabela_paginas[i] = SEM_QUADRO;
-    for (i = 0; i < QTD_QUADROS; i++) mmu->dono_do_quadro[i] = -1;
+    for (i = 0; i < QTD_QUADROS; i++){
+        mmu->dono_do_quadro[i] = -1;
+        mmu->ultimo_uso[i] = 0;
+    }
+    mmu->relogio = 0;
+    mmu->politica_paginas = cfg->troca_paginas;
     mmu->quadros_ocupados = 0;
     mmu->p_fifo = 0;
     mmu->disco = NULL;
@@ -255,13 +263,28 @@ static int vitima_fifo(Mmu *mmu){
     return alvo;
 }
 
+static int vitima_lru(const Mmu *mmu){
+    int alvo = 0;
+    int q;
+    for (q = 1; q < QTD_QUADROS; q++){
+        if (mmu->ultimo_uso[q] < mmu->ultimo_uso[alvo]){
+            alvo = q;
+        }
+    }
+    return alvo;
+}
+
 static int atender_falta(Mmu *mmu, unsigned pagina){
     int quadro;
     if (mmu->quadros_ocupados < QTD_QUADROS){
         quadro = mmu->quadros_ocupados++;
     } else {
         int antiga = 0;
-        quadro = vitima_fifo(mmu);
+        if (mmu->politica_paginas == POLITICA_LRU){
+            quadro = vitima_lru(mmu);
+        } else {
+            quadro = vitima_fifo(mmu);
+        }
         antiga = mmu->dono_do_quadro[quadro];
         if (antiga != -1){
             mmu->tabela_paginas[antiga] = SEM_QUADRO;
@@ -290,6 +313,8 @@ static int traduzir(Mmu *mmu, unsigned logico, Traducao *t){
             return 0;
         }
     }
+    mmu->relogio++;
+    mmu->ultimo_uso[t->quadro] = mmu->relogio;
     t->fisico = (unsigned)t->quadro * TAM_PAGINA + t->deslocamento;
     t->conteudo = mmu->ram[t->quadro][t->deslocamento];
     return 1;
@@ -341,7 +366,7 @@ int main(int argc, char *argv[]){
         return EXIT_FAILURE;
     }
 
-    preparar_mmu(&mmu);
+    preparar_mmu(&mmu, &cfg);
     if (!conectar_disco(&mmu)){
         descartar_enderecos(&enderecos);
         return EXIT_FAILURE;
