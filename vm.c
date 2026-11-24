@@ -294,9 +294,31 @@ static void escrever_estatisticas(FILE *saida, const Mmu *mmu, size_t total){
     fprintf(saida, "TLB Hit Rate = %.3f\n", (double)mmu->acertos_tlb / (double)total);
 }
 
+static int simular(Mmu *mmu, const ListaEnderecos *lista){
+    FILE *saida = fopen(ARQUIVO_SAIDA, "w");
+    size_t i;
+    if (saida == NULL){
+        fprintf(stderr, "Erro: nao consegui criar '%s' (%s).\n", ARQUIVO_SAIDA, strerror(errno));
+        return 0;
+    }
+    for (i = 0; i < lista->qtd; i++){
+        Traducao t;
+        if (!traduzir(mmu, lista->valores[i], &t)){
+            fclose(saida);
+            return 0;
+        }
+        escrever_traducao(saida, &t);
+    }
+    escrever_estatisticas(saida, mmu, lista->qtd);
+    fclose(saida);
+    return 1;
+}
+
 int main(int argc, char *argv[]){
     Configuracao cfg;
     ListaEnderecos enderecos;
+    static Mmu mmu;
+    int deu_certo;
     if (!carregar_configuracao(argc, argv, &cfg)){
         exibir_ajuda(argv[0]);
         return EXIT_FAILURE;
@@ -305,8 +327,14 @@ int main(int argc, char *argv[]){
     if (!importar_enderecos(cfg.caminho_enderecos, &enderecos)){
         return EXIT_FAILURE;
     }
-    printf("%zu enderecos validos em '%s'.\n", enderecos.qtd, cfg.caminho_enderecos);
 
+    preparar_mmu(&mmu);
+    if (!conectar_disco(&mmu)){
+        descartar_enderecos(&enderecos);
+        return EXIT_FAILURE;
+    }
+    deu_certo = simular(&mmu, &enderecos);
+    fclose(mmu.disco);
     descartar_enderecos(&enderecos);
-    return EXIT_SUCCESS;
+    return deu_certo ? EXIT_SUCCESS : EXIT_FAILURE;
 }
