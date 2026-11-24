@@ -48,6 +48,7 @@ typedef struct {
     int ocupada;
     unsigned pagina;
     int quadro;
+    unsigned long ultimo_uso;
 } EntradaTlb;
 
 typedef struct {
@@ -64,6 +65,7 @@ typedef struct {
     Politica politica_paginas;
     EntradaTlb tlb[TAM_TLB];
     int p_fifo_tlb;
+    Politica politica_tlb;
 } Mmu;
 
 typedef struct {
@@ -240,6 +242,7 @@ static void preparar_mmu(Mmu *mmu, const Configuracao *cfg){
         mmu->tlb[i].ocupada = 0;
     }
     mmu->p_fifo_tlb = 0;
+    mmu->politica_tlb = cfg->troca_tlb;
     mmu->quadros_ocupados = 0;
     mmu->p_fifo = 0;
     mmu->disco = NULL;
@@ -291,13 +294,21 @@ static int registrar_tlb(Mmu *mmu, unsigned pagina, int quadro){
             livre = e;
         }
     }
-    if (livre == -1){
+    if (livre == -1 && mmu->politica_tlb == POLITICA_LRU){
+        livre = 0;
+        for (e = 1; e < TAM_TLB; e++){
+            if (mmu->tlb[e].ultimo_uso < mmu->tlb[livre].ultimo_uso){
+                livre = e;
+            }
+        }
+    } else if (livre == -1){
         livre = mmu->p_fifo_tlb;
         mmu->p_fifo_tlb = (mmu->p_fifo_tlb + 1) % TAM_TLB;
     }
     mmu->tlb[livre].ocupada = 1;
     mmu->tlb[livre].pagina = pagina;
     mmu->tlb[livre].quadro = quadro;
+    mmu->tlb[livre].ultimo_uso = mmu->relogio;
     return livre;
 }
 
@@ -359,10 +370,12 @@ static int traduzir(Mmu *mmu, unsigned logico, Traducao *t){
     t->logico = logico;
     t->pagina = logico / TAM_PAGINA;
     t->deslocamento = logico % TAM_PAGINA;
+    mmu->relogio++;
     t->posicao_tlb = USAR_TLB ? procurar_tlb(mmu, t->pagina) : -1;
     if (t->posicao_tlb != -1){
         mmu->acertos_tlb++;
         t->quadro = mmu->tlb[t->posicao_tlb].quadro;
+        mmu->tlb[t->posicao_tlb].ultimo_uso = mmu->relogio;
     } else {
         t->quadro = mmu->tabela_paginas[t->pagina];
         if (t->quadro == SEM_QUADRO){
@@ -375,7 +388,6 @@ static int traduzir(Mmu *mmu, unsigned logico, Traducao *t){
             t->posicao_tlb = registrar_tlb(mmu, t->pagina, t->quadro);
         }
     }
-    mmu->relogio++;
     mmu->ultimo_uso[t->quadro] = mmu->relogio;
     t->fisico = (unsigned)t->quadro * TAM_PAGINA + t->deslocamento;
     t->conteudo = mmu->ram[t->quadro][t->deslocamento];
