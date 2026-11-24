@@ -8,7 +8,7 @@
 #define TAM_PAGINA  256
 #define QTD_PAGINAS  256
 #ifndef QTD_QUADROS
-#define QTD_QUADROS 256
+#define QTD_QUADROS 128
 #endif
 #define SEM_QUADRO (-1)
 #define ARQUIVO_DISCO "BACKING_STORE.bin"
@@ -48,6 +48,7 @@ typedef struct {
     FILE *disco;
     unsigned long faltas_de_pagina;
     unsigned long acertos_tlb;
+    int p_fifo;
 } Mmu;
 
 typedef struct {
@@ -216,9 +217,10 @@ static void preparar_mmu(Mmu *mmu){
     for (i = 0; i < QTD_PAGINAS; i++) mmu->tabela_paginas[i] = SEM_QUADRO;
     for (i = 0; i < QTD_QUADROS; i++) mmu->dono_do_quadro[i] = -1;
     mmu->quadros_ocupados = 0;
-    mmu->disco            = NULL;
+    mmu->p_fifo = 0;
+    mmu->disco = NULL;
     mmu->faltas_de_pagina = 0;
-    mmu->acertos_tlb      = 0;
+    mmu->acertos_tlb = 0;
 }
 
 static int conectar_disco(Mmu *mmu){
@@ -247,13 +249,24 @@ static int trazer_do_disco(Mmu *mmu, unsigned pagina, int quadro){
     return 1;
 }
 
+static int vitima_fifo(Mmu *mmu){
+    int alvo = mmu->p_fifo;
+    mmu->p_fifo = (mmu->p_fifo + 1) % QTD_QUADROS;
+    return alvo;
+}
+
 static int atender_falta(Mmu *mmu, unsigned pagina){
     int quadro;
-    if (mmu->quadros_ocupados >= QTD_QUADROS){
-        fprintf(stderr, "Erro: memoria fisica cheia.\n");
-        return SEM_QUADRO;
+    if (mmu->quadros_ocupados < QTD_QUADROS){
+        quadro = mmu->quadros_ocupados++;
+    } else {
+        int antiga = 0;
+        quadro = vitima_fifo(mmu);
+        antiga = mmu->dono_do_quadro[quadro];
+        if (antiga != -1){
+            mmu->tabela_paginas[antiga] = SEM_QUADRO;
+        }
     }
-    quadro = mmu->quadros_ocupados++;
 
     if (!trazer_do_disco(mmu, pagina, quadro)){
         return SEM_QUADRO;

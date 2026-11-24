@@ -86,4 +86,48 @@ Endereco 30198 -> pagina 117, deslocamento 246, quadro 2, fisico 758, valor 29
 [01m[Kvm.c:268:12:[m[K [01;35m[Kwarning: [m[K‘[01m[Ktraduzir[m[K’ defined but not used [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-function-Wunused-function]8;;[m[K]
   268 | static int [01;35m[Ktraduzir[m[K(Mmu *mmu, unsigned logico, Traducao *t){
       |            [01;35m[K^~~~~~~~[m[K
-[01m[Kvm.c:224:12:[m[K [01;35m[Kwarning: [m[K‘[01m[Kconectar_disco[m[K’ defined but not used [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-function-Wunused-function]8;;[m
+[01m[Kvm.c:224:12:[m[K [01;35m[Kwarning: [m[K‘[01m[Kconectar_disco[m[K’ defined but not used [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-function-Wunused-function]8;;[m[K]
+  224 | static int [01;35m[Kconectar_disco[m[K(Mmu *mmu){
+      |            [01;35m[K^~~~~~~~~~~~~~[m[K
+[01m[Kvm.c:214:13:[m[K [01;35m[Kwarning: [m[K‘[01m[Kpreparar_mmu[m[K’ defined but not used [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-function-Wunused-function]8;;[m[K]
+  214 | static void [01;35m[Kpreparar_mmu[m[K(Mmu *mmu){
+      |             [01;35m[K^~~~~~~~~~~~[m[K
+[?2004h]0;luisa@LAPTOP-Q39GM9AS: /mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[01;32mluisa@LAPTOP-Q39GM9AS[00m:[01;34m/mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[00m$ make
+[?2004lgcc -Wall -Wextra -Wpedantic -std=c11 vm.c -o vm
+[?2004h]0;luisa@LAPTOP-Q39GM9AS: /mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[01;32mluisa@LAPTOP-Q39GM9AS[00m:[01;34m/mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[00m$ [7m./vm addresses.txt lru fifo[27m./vm addresses.txt lru fifo
+[?2004lVirtual address: 16916 TLB: -1 Physical address: 20 Value: 0
+Virtual address: 62493 TLB: -1 Physical address: 285 Value: 0
+Virtual address: 30198 TLB: -1 Physical address: 758 Value: 29
+Virtual address: 53683 TLB: -1 Physical address: 947 Value: 108
+Virtual address: 40185 TLB: -1 Physical address: 1273 Value: 0
+Virtual address: 28781 TLB: -1 Physical address: 1389 Value: 0
+Virtual address: 24462 TLB: -1 Physical address: 1678 Value: 23
+Virtual address: 48399 TLB: -1 Physical address: 1807 Value: 67
+Virtual address: 64815 TLB: -1 Physical address: 2095 Value: 75
+Virtual address: 18295 TLB: -1 Physical address: 2423 Value: -35
+Number of Translated Addresses = 10
+Page Faults = 10
+Page Fault Rate = 1.000
+TLB Hits = 0
+TLB Hit Rate = 0.000
+[?2004h]0;luisa@LAPTOP-Q39GM9AS: /mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[01;32mluisa@LAPTOP-Q39GM9AS[00m:[01;34m/mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[00m$ make
+[?2004lgcc -Wall -Wextra -Wpedantic -std=c11 vm.c -o vm
+[?2004h]0;luisa@LAPTOP-Q39GM9AS: /mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[01;32mluisa@LAPTOP-Q39GM9AS[00m:[01;34m/mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[00m$ [7m./vm addresses.txt lru fifo[27m./vm addresses.txt lru fifo
+[?2004l[?2004h]0;luisa@LAPTOP-Q39GM9AS: /mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[01;32mluisa@LAPTOP-Q39GM9AS[00m:[01;34m/mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[00m$ [7mhead -3 correct.txt[27mhead -3 correct.txt
+[?2004lVirtual address: 16916 TLB: -1 Physical address: 20 Value: 0
+Virtual address: 62493 TLB: -1 Physical address: 285 Value: 0
+Virtual address: 30198 TLB: -1 Physical address: 758 Value: 29
+[?2004h]0;luisa@LAPTOP-Q39GM9AS: /mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[01;32mluisa@LAPTOP-Q39GM9AS[00m:[01;34m/mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[00m$ [7mtail -5 correct.txt[27mtail -5 correct.txt
+[?2004lNumber of Translated Addresses = 1000
+Page Faults = 244
+Page Fault Rate = 0.244
+TLB Hits = 0
+TLB Hit Rate = 0.000
+[?2004h]0;luisa@LAPTOP-Q39GM9AS: /mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[01;32mluisa@LAPTOP-Q39GM9AS[00m:[01;34m/mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[00m$ make
+[?2004lgcc -Wall -Wextra -Wpedantic -std=c11 vm.c -o vm
+[01m[Kvm.c:252:12:[m[K [01;35m[Kwarning: [m[K‘[01m[Kvitima_fifo[m[K’ defined but not used [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-function-Wunused-function]8;;[m[K]
+  252 | static int [01;35m[Kvitima_fifo[m[K(Mmu *mmu){
+      |            [01;35m[K^~~~~~~~~~~[m[K
+[?2004h]0;luisa@LAPTOP-Q39GM9AS: /mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[01;32mluisa@LAPTOP-Q39GM9AS[00m:[01;34m/mnt/c/Users/luisa/OneDrive/Área de Trabalho/VM/VM[00m$ make
+[?2004lgcc -Wall -Wextra -Wpedantic -std=c11 vm.c -o vm
+[01m[Kvm.c:244:12:[m[K [01;35m[Kwarning: [m[K‘[01m[Ktrazer_do_disco[m[K’ defined b
