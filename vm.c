@@ -11,6 +11,10 @@
 #define QTD_QUADROS 128
 #endif
 #define SEM_QUADRO (-1)
+#define TAM_TLB 16
+#ifndef USAR_TLB
+#define USAR_TLB 1
+#endif
 #define ARQUIVO_DISCO "BACKING_STORE.bin"
 #define ARQUIVO_SAIDA "correct.txt"
 
@@ -41,6 +45,12 @@ typedef enum {
 } SituacaoLinha;
 
 typedef struct {
+    int ocupada;
+    unsigned pagina;
+    int quadro;
+} EntradaTlb;
+
+typedef struct {
     int tabela_paginas[QTD_PAGINAS];
     int dono_do_quadro[QTD_QUADROS];
     signed char ram[QTD_QUADROS][TAM_PAGINA];
@@ -52,6 +62,8 @@ typedef struct {
     unsigned long relogio;
     unsigned long ultimo_uso[QTD_QUADROS];
     Politica politica_paginas;
+    EntradaTlb tlb[TAM_TLB];
+    int p_fifo_tlb;
 } Mmu;
 
 typedef struct {
@@ -224,6 +236,10 @@ static void preparar_mmu(Mmu *mmu, const Configuracao *cfg){
     }
     mmu->relogio = 0;
     mmu->politica_paginas = cfg->troca_paginas;
+    for (i = 0; i < TAM_TLB; i++){
+        mmu->tlb[i].ocupada = 0;
+    }
+    mmu->p_fifo_tlb = 0;
     mmu->quadros_ocupados = 0;
     mmu->p_fifo = 0;
     mmu->disco = NULL;
@@ -257,6 +273,43 @@ static int trazer_do_disco(Mmu *mmu, unsigned pagina, int quadro){
     return 1;
 }
 
+static int procurar_tlb(const Mmu *mmu, unsigned pagina){
+    int e;
+    for (e = 0; e < TAM_TLB; e++){
+        if (mmu->tlb[e].ocupada && mmu->tlb[e].pagina == pagina){
+            return e;
+        }
+    }
+    return -1;
+}
+
+static int registrar_tlb(Mmu *mmu, unsigned pagina, int quadro){
+    int e;
+    int livre = -1;
+    for (e = 0; e < TAM_TLB && livre == -1; e++){
+        if (!mmu->tlb[e].ocupada){
+            livre = e;
+        }
+    }
+    if (livre == -1){
+        livre = mmu->p_fifo_tlb;
+        mmu->p_fifo_tlb = (mmu->p_fifo_tlb + 1) % TAM_TLB;
+    }
+    mmu->tlb[livre].ocupada = 1;
+    mmu->tlb[livre].pagina = pagina;
+    mmu->tlb[livre].quadro = quadro;
+    return livre;
+}
+
+static void esquecer_da_tlb(Mmu *mmu, unsigned pagina){
+    int e;
+    for (e = 0; e < TAM_TLB; e++){
+        if (mmu->tlb[e].ocupada && mmu->tlb[e].pagina == pagina){
+            mmu->tlb[e].ocupada = 0;
+        }
+    }
+}
+
 static int vitima_fifo(Mmu *mmu){
     int alvo = mmu->p_fifo;
     mmu->p_fifo = (mmu->p_fifo + 1) % QTD_QUADROS;
@@ -288,6 +341,7 @@ static int atender_falta(Mmu *mmu, unsigned pagina){
         antiga = mmu->dono_do_quadro[quadro];
         if (antiga != -1){
             mmu->tabela_paginas[antiga] = SEM_QUADRO;
+            esquecer_da_tlb(mmu, (unsigned)antiga);
         }
     }
 
@@ -305,12 +359,20 @@ static int traduzir(Mmu *mmu, unsigned logico, Traducao *t){
     t->logico = logico;
     t->pagina = logico / TAM_PAGINA;
     t->deslocamento = logico % TAM_PAGINA;
-    t->posicao_tlb  = -1;
-    t->quadro = mmu->tabela_paginas[t->pagina];
-    if (t->quadro == SEM_QUADRO){
-        t->quadro = atender_falta(mmu, t->pagina);
+    t->posicao_tlb = USAR_TLB ? procurar_tlb(mmu, t->pagina) : -1;
+    if (t->posicao_tlb != -1){
+        mmu->acertos_tlb++;
+        t->quadro = mmu->tlb[t->posicao_tlb].quadro;
+    } else {
+        t->quadro = mmu->tabela_paginas[t->pagina];
         if (t->quadro == SEM_QUADRO){
-            return 0;
+            t->quadro = atender_falta(mmu, t->pagina);
+            if (t->quadro == SEM_QUADRO){
+                return 0;
+            }
+        }
+        if (USAR_TLB){
+            t->posicao_tlb = registrar_tlb(mmu, t->pagina, t->quadro);
         }
     }
     mmu->relogio++;
@@ -329,7 +391,7 @@ static void escrever_estatisticas(FILE *saida, const Mmu *mmu, size_t total){
     fprintf(saida, "Page Faults = %lu\n", mmu->faltas_de_pagina);
     fprintf(saida, "Page Fault Rate = %.3f\n", (double)mmu->faltas_de_pagina / (double)total);
     fprintf(saida, "TLB Hits = %lu\n", mmu->acertos_tlb);
-    fprintf(saida, "TLB Hit Rate = %.3f\n", (double)mmu->acertos_tlb / (double)total);
+    fprintf(saida, "TLB Hit Rate = %.3f", (double)mmu->acertos_tlb / (double)total);
 }
 
 static int simular(Mmu *mmu, const ListaEnderecos *lista){
